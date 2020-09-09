@@ -15,18 +15,19 @@ exports.getLEDStatus = async (req, res, next) => {
     console.log(err, "error in retrieving data for esp8266");
   }
   console.log(req.params.userEmail, "userEmail");
-  //   res.send(JSON.stringify({ status: "ok" }));
 };
 
 const convertResponse = (IoT) => {
   let converted = {};
   for (item in IoT) {
     if (item === "servos") {
-      converted = {
-        ...converted,
-        [IoT[item][0].name]: IoT[item][0].pos,
-        [IoT[item][0].name + "Speed"]: IoT[item][0].speed,
-      };
+      IoT[item].forEach((servo, index) => {
+        converted = {
+          ...converted,
+          [servo.name]: servo.pos,
+          [servo.name + "Speed"]: servo.speed,
+        };
+      });
     } else if (IoT[item] === true) {
       converted = {
         ...converted,
