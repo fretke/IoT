@@ -47,7 +47,9 @@ class ServoMotor {
 };
 
 Servo firstServo;
+Servo secondServo;
 ServoMotor baseMotor (52, 10, firstServo, 0); // initializing first motor
+ServoMotor mainMotor (0, 0, secondServo, 4);
 int ledPin = 2;
 
 void setup () {
@@ -55,7 +57,7 @@ void setup () {
   pinMode(ledPin, OUTPUT);
   Serial.begin(115200);
   WiFi.begin(ssid, password);
-  
+
   while (WiFi.status() != WL_CONNECTED) {
     delay(1000);
     Serial.print("Connecting..");
@@ -76,21 +78,29 @@ void loop() {
       delay(5000);
       return;
     }
-    const String name = doc["ledIsOn"];
-    const int newPos = doc["firstServo"];
+    const String stateLED = doc["ledIsOn"];
+    const int newPosBase = doc["firstServo"];
+    const int newPosMain = doc["secondServo"];
     baseMotor.servoSpeed = doc["firstServoSpeed"];
-    // need to reformat LED control
-    if (name == "on") {
-      digitalWrite(ledPin, HIGH);
-    } else {
-      digitalWrite(ledPin, LOW);
-    }
+    mainMotor.servoSpeed = doc["secondServoSpeed"];
+    updateLED(ledPin, stateLED);
 
-    if (newPos != baseMotor.servoPosition) {
-      baseMotor.moveToNewLocation(newPos);
+    if (newPosBase != baseMotor.servoPosition) {
+      baseMotor.moveToNewLocation(newPosBase);
+    }
+     if (newPosMain != mainMotor.servoPosition) {
+      mainMotor.moveToNewLocation(newPosMain);
     }
   }
   delay(1000);
+}
+
+void updateLED(int ledPin, String state) {
+  if (state == "on") {
+    digitalWrite(ledPin, HIGH);
+  } else {
+    digitalWrite(ledPin, LOW);
+  }
 }
 
 String getDataFromServer () {
