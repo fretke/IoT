@@ -66,7 +66,7 @@ exports.updateBulb = async (req, res, next) => {
   try {
     const { user, status } = req.body;
 
-    const result = await User.update(
+    const result = await User.updateOne(
       { email: user },
       { $set: { "IoT.ledIsOn": status } }
     );
@@ -78,5 +78,32 @@ exports.updateBulb = async (req, res, next) => {
     }
   } catch (err) {
     console.log(err, "error updating bulb state");
+  }
+};
+
+exports.updateServo = async (req, res, next) => {
+  const { servoName, property, value, userEmail } = req.body;
+
+  try {
+    let result;
+    if (property === "pos") {
+      result = await User.updateOne(
+        { email: userEmail, "IoT.servos.name": servoName },
+        { $set: { "IoT.servos.$.pos": value } }
+      );
+    } else {
+      result = await User.updateOne(
+        { email: userEmail, "IoT.servos.name": servoName },
+        { $set: { "IoT.servos.$.speed": value } }
+      );
+    }
+
+    if (result.n === 1) {
+      res.send(JSON.stringify({ updated: true }));
+    } else {
+      res.send(JSON.stringify({ updated: false }));
+    }
+  } catch (err) {
+    console.log(err, "error while updating servo in Server");
   }
 };

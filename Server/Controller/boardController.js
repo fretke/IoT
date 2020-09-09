@@ -1,6 +1,6 @@
 const User = require("../Models/user");
 
-exports.getBulbStatus = async (req, res, next) => {
+exports.getLEDStatus = async (req, res, next) => {
   try {
     const currentUser = await User.findOne({ email: req.params.userEmail });
     if (currentUser) {
@@ -21,7 +21,13 @@ exports.getBulbStatus = async (req, res, next) => {
 const convertResponse = (IoT) => {
   let converted = {};
   for (item in IoT) {
-    if (IoT[item]) {
+    if (item === "servos") {
+      converted = {
+        ...converted,
+        [IoT[item][0].name]: IoT[item][0].pos,
+        [IoT[item][0].name + "Speed"]: IoT[item][0].speed,
+      };
+    } else if (IoT[item] === true) {
       converted = {
         ...converted,
         [item]: "on",

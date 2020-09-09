@@ -8,4 +8,6 @@ router.post("/logIn", mainController.logIn);
 
 router.post("/updateBulb", mainController.updateBulb);
 
+router.post("/updateServo", mainController.updateServo);
+
 module.exports = router;
