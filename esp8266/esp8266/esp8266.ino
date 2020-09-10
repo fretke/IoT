@@ -45,7 +45,6 @@ class ServoMotor {
     }
 
 };
-
 Servo firstServo;
 Servo secondServo;
 ServoMotor baseMotor (52, 10, firstServo, 0); // initializing first motor
@@ -65,7 +64,7 @@ void setup () {
 }
 
 void loop() {
-
+  
   baseMotor.printStatus();
 
   if (WiFi.status() == WL_CONNECTED) { //Check WiFi connection status
@@ -106,7 +105,7 @@ void updateLED(int ledPin, String state) {
 String getDataFromServer () {
   HTTPClient http;  //Declare an object of class HTTPClient
 
-  http.begin("http://alfre-185020a7.localhost.run/esp8266/lightBulb/" + email);  //Specify request destination
+  http.begin("http://alfre-98fe9057.localhost.run/esp8266/lightBulb/" + email);  //Specify request destination
   int httpCode = http.GET();                                                                  //Send the request
 
   if (httpCode > 0) { //Check the returning code
