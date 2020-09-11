@@ -63,6 +63,16 @@ exports.logIn = async (req, res, next) => {
 };
 
 exports.updateBulb = async (req, res, next) => {
+  const io = req.app.get("socket");
+  // io.sockets.emit("message", { pos: 32 });
+  let ledStatus = "off";
+  if (req.body.status) ledStatus = "on";
+  io.sockets.sockets[req.body.sessionId].broadcast.emit("led", {
+    ledIsOn: ledStatus,
+  });
+  // console.log(io.sockets.sockets[req.body.sessionId], " <- all sockets");
+  console.log(req.body.sessionId, "socketId");
+
   try {
     const { user, status } = req.body;
 
@@ -82,7 +92,16 @@ exports.updateBulb = async (req, res, next) => {
 };
 
 exports.updateServo = async (req, res, next) => {
-  const { servoName, property, value, userEmail } = req.body;
+  const { servoName, property, value, userEmail, sessionId } = req.body;
+  console.log(sessionId, "<-sessionId");
+
+  const io = req.app.get("socket");
+  // io.sockets.emit("message", { pos: 32 });
+  io.sockets.sockets[req.body.sessionId].broadcast.emit("Servo", {
+    servoName,
+    property,
+    value,
+  });
 
   try {
     let result;
@@ -107,3 +126,5 @@ exports.updateServo = async (req, res, next) => {
     console.log(err, "error while updating servo in Server");
   }
 };
+
+const broadcastMessage = () => {};

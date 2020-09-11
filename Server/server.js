@@ -3,6 +3,7 @@ const bodyParser = require("body-parser");
 const mainRoutes = require("./Routes/mainRoutes");
 const boardRoutes = require("./Routes/boardRoutes");
 const mongoose = require("mongoose");
+const socket = require("socket.io");
 require("dotenv").config();
 
 const app = express();
@@ -31,10 +32,21 @@ mongoose
     useUnifiedTopology: true,
   })
   .then((res) => {
-    app.listen(process.env.PORT, () => {
+    const server = app.listen(process.env.PORT, () => {
       console.log("Server is running on port " + process.env.PORT);
     });
+    const io = socket(server);
+    io.sockets.on("connection", newConnection);
+    app.set("socket", io);
   })
   .catch((err) => {
     console.log(err, "not able to connect to DB. Server not launched");
   });
+
+const newConnection = (socket) => {
+  console.log(socket.id, "new connection id");
+  socket.on("random", (data) => {
+    console.log(data, "data sent from server");
+    socket.broadcast.emit("message", { data: "working?" });
+  });
+};
