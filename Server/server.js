@@ -45,8 +45,19 @@ mongoose
 
 const newConnection = (socket) => {
   console.log(socket.id, "new connection id");
-  socket.on("random", (data) => {
-    console.log(data, "data sent from server");
-    socket.broadcast.emit("message", { data: "working?" });
+  socket.on("room", (room) => {
+    console.log("trying to enter room");
+    socket.room = room;
+    socket.join(room);
+  });
+
+  socket.on("updateBulb", (data) => {
+    let ledStatus = "off";
+    if (data) ledStatus = "on";
+    socket.broadcast.to(socket.room).emit("led", { ledIsOn: ledStatus });
+  });
+
+  socket.on("updateServo", (data) => {
+    socket.broadcast.to(socket.room).emit("Servo", data);
   });
 };
