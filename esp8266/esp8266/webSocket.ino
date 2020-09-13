@@ -52,6 +52,7 @@ int ledPin = 2;
 
 const char* ssid = "Telia-33F95F-Greitas";
 const char* pass = "59994CE571";
+const char* uniqueBoardId = "5f574e9df11b1a4a3cc911c2";
 
 int R = D1;
 int G = D2;
@@ -68,11 +69,13 @@ void setup() {
 
 
   USER_SERIAL.begin(115200);
+  USER_SERIAL.print("what the fuck??");
 
   //  searchWiFi();
   connectWiFi();
 
   webSocket.begin("192.168.1.136", 8080);
+  webSocket.on("connect", joinRoom);
   webSocket.on("Servo", controlled);
   webSocket.on("led", ledControl);
 }
@@ -80,6 +83,10 @@ void setup() {
 void loop() {
   webSocket.loop();
 
+}
+
+void joinRoom (const char* message, size_t length){
+    webSocket.emit("room", "\"5f574e9df11b1a4a3cc911c2\"");
 }
 
 void ledControl(const char* message, size_t length) {
