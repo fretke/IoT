@@ -54,10 +54,6 @@ const char* ssid = "Telia-33F95F-Greitas";
 const char* pass = "59994CE571";
 const char* uniqueBoardId = "5f574e9df11b1a4a3cc911c2";
 
-int R = D1;
-int G = D2;
-int B = D3;
-
 
 
 
@@ -101,6 +97,7 @@ void ledControl(const char* message, size_t length) {
   }
   const String stateLED = doc["ledIsOn"];
  updateLED(stateLED);
+ webSocket.emit("taskCompleted", "\"success\"");
 }
 
 void controlled(const char* message, size_t length) {
@@ -136,6 +133,8 @@ void controlled(const char* message, size_t length) {
       mainMotor.servoSpeed = value;
     }
   }
+
+  webSocket.emit("taskCompleted", "\"success\"");
 
 }
 

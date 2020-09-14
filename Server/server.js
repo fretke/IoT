@@ -55,9 +55,18 @@ const newConnection = (socket) => {
     let ledStatus = "off";
     if (data) ledStatus = "on";
     socket.broadcast.to(socket.room).emit("led", { ledIsOn: ledStatus });
+    socket.broadcast.to(socket.room).emit("updateStarted");
   });
 
   socket.on("updateServo", (data) => {
     socket.broadcast.to(socket.room).emit("Servo", data);
+    socket.broadcast.to(socket.room).emit("updateStarted");
+  });
+
+  socket.on("taskCompleted", (data) => {
+    console.log(data, " <- data from controller");
+    let response = null;
+    data === "success" ? (response = true) : (response = false);
+    socket.broadcast.to(socket.room).emit("controllerDone", { status: data });
   });
 };
