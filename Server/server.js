@@ -25,7 +25,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 // app.get("/", (req, res) => {
 //   res.send("IoT server");
 // });
-
+let io;
 mongoose
   .connect(process.env.MONGOOSE, {
     useNewUrlParser: true,
@@ -35,7 +35,7 @@ mongoose
     const server = app.listen(process.env.PORT, () => {
       console.log("Server is running on port " + process.env.PORT);
     });
-    const io = socket(server);
+    io = socket(server);
     io.sockets.on("connection", newConnection);
     app.set("socket", io);
   })
@@ -55,18 +55,18 @@ const newConnection = (socket) => {
     let ledStatus = "off";
     if (data) ledStatus = "on";
     socket.broadcast.to(socket.room).emit("led", { ledIsOn: ledStatus });
-    socket.broadcast.to(socket.room).emit("updateStarted");
+    io.to(socket.room).emit("updateStarted");
   });
 
   socket.on("updateServo", (data) => {
     socket.broadcast.to(socket.room).emit("Servo", data);
-    socket.broadcast.to(socket.room).emit("updateStarted");
+    io.to(socket.room).emit("updateStarted");
   });
 
   socket.on("taskCompleted", (data) => {
     console.log(data, " <- data from controller");
     let response = null;
     data === "success" ? (response = true) : (response = false);
-    socket.broadcast.to(socket.room).emit("controllerDone", { status: data });
+    socket.to(socket.room).emit("controllerDone", { status: data });
   });
 };
