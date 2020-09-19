@@ -10,4 +10,8 @@ router.post("/updateBulb", mainController.updateBulb);
 
 router.post("/updateServo", mainController.updateServo);
 
+router.post("/saveNewSequence", mainController.saveNewSequence);
+
+router.post("/deleteSequence", mainController.deleteSequence);
+
 module.exports = router;

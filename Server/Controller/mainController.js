@@ -109,4 +109,40 @@ exports.updateServo = async (req, res, next) => {
   }
 };
 
-const broadcastMessage = () => {};
+exports.saveNewSequence = async (req, res, next) => {
+  const { userEmail, newEntry } = req.body;
+  console.log(req.body.newEntry, "savable sequence received");
+  try {
+    const response = await User.updateOne(
+      { email: userEmail },
+      { $push: { "IoT.seq": newEntry } }
+    );
+    if (response.nModified === 1) {
+      res.send(JSON.stringify({ success: true }));
+    } else {
+      res.send(JSON.stringify({ success: false }));
+    }
+    console.log(response, "res from database");
+  } catch (err) {
+    console.log(err, "error saving new sequence in database");
+  }
+};
+
+exports.deleteSequence = async (req, res, next) => {
+  const { title, userEmail } = req.body;
+
+  try {
+    const response = await User.updateOne(
+      { email: userEmail },
+      { $pull: { "IoT.seq": { seqName: title } } }
+    );
+    if (response.nModified === 1) {
+      res.send(JSON.stringify({ success: true }));
+    } else {
+      res.send(JSON.stringify({ success: false }));
+    }
+    console.log(response, "res from delete sequence in db");
+  } catch (err) {
+    console.log(err, "error when deleting sequence in database");
+  }
+};
