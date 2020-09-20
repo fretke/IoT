@@ -70,4 +70,15 @@ const newConnection = (socket) => {
     data === "success" ? (response = true) : (response = false);
     socket.to(socket.room).emit("controllerDone", { status: data });
   });
+
+  socket.on("excecuteSequence", (data) => {
+    console.log(data, "server received sequence data from socket");
+    socket
+      .to(socket.room)
+      .emit("playSequence", { numberOfMoves: data.length, data });
+  });
+
+  socket.on("servoPos", (data) => {
+    console.log(data, "data received from controller");
+  });
 };
