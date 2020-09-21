@@ -76,9 +76,22 @@ const newConnection = (socket) => {
     socket
       .to(socket.room)
       .emit("playSequence", { numberOfMoves: data.length, data });
+    io.to(socket.room).emit("updateStarted");
   });
 
-  socket.on("servoPos", (data) => {
-    console.log(data, "data received from controller");
+  socket.on("servoPos", (res) => {
+    console.log(res.data, "data received from controller");
+    const allMotors = ["firstServo", "secondServo", "thirdServo"];
+    const formated = res.data.split(".").map((data, index) => {
+      const arr = data.split(",");
+      return {
+        name: allMotors[index],
+        pos: arr[1],
+        speed: arr[0],
+      };
+    });
+    socket
+      .to(socket.room)
+      .emit("controllerDone", { status: true, data: formated });
   });
 };
