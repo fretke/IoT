@@ -41,6 +41,7 @@ exports.logIn = async (req, res, next) => {
     console.log(user, "user");
     const match = await bcrypt.compare(pass, user.password);
     if (match) {
+      // req.session.isLoggedIn = true;
       res.send(
         JSON.stringify({
           auth: true,
@@ -60,6 +61,35 @@ exports.logIn = async (req, res, next) => {
     }
   } catch (err) {
     console.log(err, "error logging in user");
+  }
+};
+
+exports.logInCookie = async (req, res, next) => {
+  console.log(req.session, "request body");
+  req.session.isLoggedIn = true;
+  try {
+    const user = await User.findById(req.body.userId);
+    if (!user) {
+      res.send(
+        JSON.stringify({
+          auth: false,
+          message: "wrong id",
+        })
+      );
+      return;
+    }
+    console.log(user, "user from cookie");
+    res.send(
+      JSON.stringify({
+        auth: true,
+        userName: user.userName,
+        userEmail: user.email,
+        IoT: user.IoT,
+        id: user._id,
+      })
+    );
+  } catch (err) {
+    console.log(err, "error while logging in with cookie");
   }
 };
 

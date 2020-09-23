@@ -1,27 +1,50 @@
 const express = require("express");
+const session = require("express-session");
 const bodyParser = require("body-parser");
 const mainRoutes = require("./Routes/mainRoutes");
 const boardRoutes = require("./Routes/boardRoutes");
 const mongoose = require("mongoose");
 const socket = require("socket.io");
+const cors = require("cors");
 require("dotenv").config();
 
 const app = express();
+// app.use(function (req, res, next) {
+//   res.header("Access-Control-Allow-Origin", "*"); // update to match the domain you will make the request from
+//   res.header(
+//     "Access-Control-Allow-Headers",
+//     "Origin, X-Requested-With, Content-Type, Accept, Set-Cookie"
+//   );
+//   res.header("Access-Control-Allow-Methods", "GET, PUT, POST, DELETE");
+//   res.header("Access-Control-Allow-Credentials", true);
+//   next();
+// });
+app.use(
+  session({
+    secret: "random text",
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      // httpOnly: true,
+      maxAge: 3600000,
+      // secure: true,
+    },
+  })
+);
+app.use(
+  cors({
+    origin: ["http://localhost:3000", "https://localhost:8080"],
+    credentials: true,
+    exposedHeaders: ["set-cookie"],
+  })
+);
 
-app.use(function (req, res, next) {
-  res.header("Access-Control-Allow-Origin", "*"); // update to match the domain you will make the request from
-  res.header(
-    "Access-Control-Allow-Headers",
-    "Origin, X-Requested-With, Content-Type, Accept"
-  );
-  res.header("Access-Control-Allow-Methods", "GET, PUT, POST, DELETE");
-  next();
-});
 app.use(express.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+// app.use(bodyParser.json());
 app.use(mainRoutes);
 app.use("/esp8266", boardRoutes);
 app.use(express.static("public"));
-app.use(bodyParser.urlencoded({ extended: true }));
 
 // app.get("/", (req, res) => {
 //   res.send("IoT server");

@@ -6,6 +6,8 @@ router.get("/", mainController.getHomePage);
 
 router.post("/logIn", mainController.logIn);
 
+router.post("/logInCookie", mainController.logInCookie);
+
 router.post("/updateBulb", mainController.updateBulb);
 
 router.post("/updateServo", mainController.updateServo);
