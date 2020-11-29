@@ -8,7 +8,6 @@ class WsManager {
     }
 
     initService(){
-        console.log(this._property, "initService");
         this._socket.sockets.on("connection", this.setConnection.bind(this))
     }
 
@@ -17,35 +16,31 @@ class WsManager {
     }
 
     setConnection(socket){
-        console.log(this._property, "socket on bulb");
         socket.on("room", (room) => {
-            console.log("trying to enter room");
             socket.room = room;
             socket.join(room);
         });
 
-        socket.on("updateBulb", (data) => {
-            console.log("updatingBulb");
-            let ledStatus = "off";
-            if (data) ledStatus = "on";
+        socket.on("UpdateDevice", (data) => {
+            const ledStatus = data ? "on" : "off";
             socket.broadcast.to(socket.room).emit("led", { ledIsOn: ledStatus });
             this._socket.to(socket.room).emit("updateStarted");
         });
 
-        socket.on("updateServo", (data) => {
+        socket.on("UpdateServo", (data) => {
             socket.broadcast.to(socket.room).emit("Servo", data);
             this._socket.to(socket.room).emit("updateStarted");
         });
 
+        socket.on("LiveControl", (data) => {
+            socket.broadcast.to(socket.room).emit("LiveControl", data);
+        })
+
         socket.on("taskCompleted", (data) => {
-            console.log(data, " <- data from controller");
-            let response = null;
-            data === "success" ? (response = true) : (response = false);
-            socket.to(socket.room).emit("controllerDone", { status: data });
+            socket.to(socket.room).emit("updateFinished", { status: data });
         });
 
         socket.on("excecuteSequence", (data) => {
-            console.log(data, "server received sequence data from socket");
             socket
                 .to(socket.room)
                 .emit("playSequence", { numberOfMoves: data.length, data });
@@ -65,7 +60,7 @@ class WsManager {
             });
             socket
                 .to(socket.room)
-                .emit("controllerDone", { status: true, data: formated });
+                .emit("SequenceOver", formated);
         });
     }
 }

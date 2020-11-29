@@ -25,7 +25,7 @@ exports.getHomePage = async (req, res, next) => {
 };
 
 exports.logIn = async (req, res, next) => {
-  const { email, pass } = req.body.userData;
+  const { email, pass } = req.body;
   console.log(email, "body of the request");
   try {
     const user = await User.findOne({ email: email });
@@ -113,21 +113,14 @@ exports.updateBulb = async (req, res, next) => {
 };
 
 exports.updateServo = async (req, res, next) => {
-  const { servoName, property, value, userEmail, id } = req.body;
+  console.log(req.body, "updating servo");
+  const { name, pos, speed, userEmail, id } = req.body;
 
   try {
-    let result;
-    if (property === "pos") {
-      result = await User.updateOne(
-        { email: userEmail, "IoT.servos.name": servoName },
-        { $set: { "IoT.servos.$.pos": value } }
-      );
-    } else {
-      result = await User.updateOne(
-        { email: userEmail, "IoT.servos.name": servoName },
-        { $set: { "IoT.servos.$.speed": value } }
-      );
-    }
+
+     const result = await User.updateOne(
+          { email: userEmail, "IoT.servos.name": name },
+          { $set: { "IoT.servos.$.pos": pos, "IoT.servos.$.speed": speed } });
 
     if (result.n === 1) {
       res.send(JSON.stringify({ updated: true }));
@@ -137,6 +130,7 @@ exports.updateServo = async (req, res, next) => {
   } catch (err) {
     console.log(err, "error while updating servo in Server");
   }
+
 };
 
 exports.saveNewSequence = async (req, res, next) => {
