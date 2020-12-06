@@ -60,17 +60,17 @@ class WsManager {
 
         socket.on(inEvents.updateDevice, (data) => {
             const ledStatus = data ? "on" : "off";
-            socket.broadcast.to(socket.room).emit(outEvents.onDeviceToggle, { ledIsOn: ledStatus });
+            socket.to(socket.room).emit(outEvents.onDeviceToggle, { ledIsOn: ledStatus });
             this._socket.to(socket.room).emit(outEvents.onUpdateStarted);
         });
 
         socket.on(inEvents.updateServo, (data) => {
-            socket.broadcast.to(socket.room).emit(outEvents.onServoUpdate, data);
+            this._socket.to(socket.room).emit(outEvents.onServoUpdate, data);
             this._socket.to(socket.room).emit(outEvents.onUpdateStarted);
         });
 
         socket.on(inEvents.liveControl, (data) => {
-            socket.broadcast.to(socket.room).emit(inEvents.liveControl, data);
+            socket.to(socket.room).emit(inEvents.liveControl, data);
         })
 
         socket.on(inEvents.taskCompleted, (data) => {
