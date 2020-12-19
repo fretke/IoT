@@ -17,6 +17,17 @@ exports.getLEDStatus = async (req, res, next) => {
   console.log(req.params.userEmail, "userEmail");
 };
 
+exports.getServoInfo = async (req, res) => {
+  console.log("received request for servo info " + req.params.userEmail);
+  const currentUser = await User.findOne({ email: req.params.userEmail });
+  const {servos} = currentUser.IoT;
+  console.log(currentUser.IoT, "data from db");
+  res.send(JSON.stringify({
+    servoQty: servos.length,
+    servos
+  }))
+}
+
 const convertResponse = (IoT) => {
   let converted = {};
   for (item in IoT) {

@@ -90,9 +90,9 @@ class WsManager {
             const formated = res.data.split(".").map((data, index) => {
                 const arr = data.split(",");
                 return {
-                    name: allMotors[index],
-                    pos: arr[1],
-                    speed: arr[0],
+                    name: arr[0],
+                    pos: arr[2],
+                    speed: arr[1],
                 };
             });
             socket

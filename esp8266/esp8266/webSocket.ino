@@ -4,324 +4,180 @@
 #include <Arduino.h>
 #include <ESP8266WiFi.h>
 #include <Servo.h>
-
-//#define Serial Serial
+#include <map>
 
 class ServoMotor {
-  public:
+   public:
+    String servoName;
     Servo motor;
     int servoPosition;
     int servoSpeed;
     int servoPort;
-    ServoMotor (int pos, int spd, Servo someMotor, int port) {
-      servoPosition = pos;
-      servoSpeed = spd;
-      servoPort = port;
-      motor = someMotor;
+    ServoMotor (String servoName, int port, int servoSpeed, int servoPos) {
+      this->servoName = servoName;
+      this->servoPort = port;
+      this->servoSpeed = servoSpeed;
+      this->servoPosition = servoPos;
+      this->initialize();
     }
 
     void initialize() {
-      motor.write(servoPosition);
-      motor.attach(servoPort);
+      this->motor.write(this->servoPosition);
+      this->motor.attach(this->servoPort);
     }
 
     void printStatus() {
       Serial.println("Servo position: ");
-      Serial.println(servoPosition);
+      Serial.println(this->servoPosition);
       Serial.println("Servo speed: ");
-      Serial.println(servoSpeed);
-
+      Serial.println(this->servoSpeed);
     }
 
     void moveToNewLocation(int newPosition) {
-      if (servoPosition < newPosition) {
-        for (int i = servoPosition; i <= newPosition; i++) {
-          motor.write(i); // liepia servui suktis į kintamojo "pos" poziciją
-          delay(servoSpeed); // laukia 15ms pasiekti pozicijai
+      if (this->servoPosition < newPosition) {
+        for (int i = this->servoPosition; i <= newPosition; i++) {
+          this->motor.write(i);
+          delay(101 - this->servoSpeed);
         }
       } else {
-        for (int i = servoPosition; i >= newPosition; i--) {
-          motor.write(i); // liepia servui suktis į kintamojo "pos" poziciją
-          delay(servoSpeed); // laukia 15ms pasiekti pozicijai
+        for (int i = this->servoPosition; i >= newPosition; i--) {
+          this->motor.write(i);
+          delay(101 - this->servoSpeed);
         }
       }
-      servoPosition = newPosition;
+      this->servoPosition = newPosition;
     }
-
 };
 
-Servo firstServo;
-Servo secondServo;
-Servo thirdServo;
-Servo ESC;
-ServoMotor baseMotor (0, 0, firstServo, 0); // initializing first motor
-ServoMotor mainMotor (0, 0, secondServo, 4);
-ServoMotor gripperMotor (0, 0, thirdServo,  5);
+typedef std::map<String, ServoMotor> MAP;
+
+const int motor_pin_out[3] = {0, 4, 5};
+
+MAP allMotors;
+MAP::iterator it;
+
 int ledPin = 2;
 
+const String ssid = "Telia-33F95F-Greitas";
+const String pass = "59994CE571";
+const String board_id = "5f574e9df11b1a4a3cc911c2";
+const String email = "alfredas.kiudys@gmail.com";
 
-const char* ssid = "Telia-33F95F-Greitas";
-const char* pass = "59994CE571";
-const char* uniqueBoardId = "5f574e9df11b1a4a3cc911c2";
-const char* email = "alfredas.kiudys@gmail.com";
-const String endPoint = "http://192.168.1.136:8080/esp8266/lightBulb/alfredas.kiudys@gmail.com";
+const String servoInfo = "http://192.168.1.136:8080/esp8266/servoInfo/alfredas.kiudys@gmail.com";
+const char* socket_address = "192.168.1.136";
 
-
-
-unsigned long currentTime;
 SocketIoClient webSocket;
-
 
 void setup() {
   pinMode(ledPin, OUTPUT);
-
   Serial.begin(115200);
-  Serial.println("First Servo current Pos");
-  Serial.println(baseMotor.motor.read());
-  Serial.println("Second Servo current Pos");
-  Serial.println(mainMotor.motor.read());
-
-  //  searchWiFi();
   connectWiFi();
-  getStartingData();
-  baseMotor.printStatus();
-  mainMotor.printStatus();
-  webSocket.begin("192.168.1.136", 8080);
+  getMotorInfo();
+  
+  webSocket.begin(socket_address, 8080);
   webSocket.on("connect", joinRoom);
-  webSocket.on("Servo", moveServo);
-  webSocket.on("led", ledControl);
+  webSocket.on("onServoUpdate", moveServo);
+  webSocket.on("onDeviceToggle", ledControl);
   webSocket.on("playSequence", playSequence);
+  webSocket.on("liveControl", moveServoLive);
 }
 
 void loop() {
   webSocket.loop();
-
 }
-
-void playSequence(const char* message, size_t length) {
-  Serial.println("sequence to be played:");
-  Serial.println(message);
+// Parses message from websockets
+StaticJsonDocument<1000> parseMessage(const char* message){
   StaticJsonDocument<1000> doc;
   DeserializationError err = deserializeJson(doc, message);
   if (err) {
     Serial.println("parsing failed");
     Serial.println(err.c_str());
     delay(5000);
-    return;
   }
+  return doc;
+}
+
+StaticJsonDocument<1000> parseMessage(String message){
+  StaticJsonDocument<1000> doc;
+  DeserializationError err = deserializeJson(doc, message);
+  if (err) {
+    Serial.println("parsing failed");
+    Serial.println(err.c_str());
+    delay(5000);
+  }
+  return doc;
+}
+
+// Executes a sequence of servo moves
+void playSequence(const char* message, size_t length) {
+  StaticJsonDocument<1000> doc = parseMessage(message);
 
   int numberOfMoves = doc["numberOfMoves"];
   for (int i = 0; i < numberOfMoves; i++) {
     const String servoName = doc["data"][i]["name"];
     int pos = doc["data"][i]["pos"];
     int servoSpeed = doc["data"][i]["speed"];
-    Serial.println(servoName);
-    if (servoName == "firstServo") {
-      baseMotor.servoSpeed =  servoSpeed;
-      baseMotor.moveToNewLocation(pos);
-    } else if (servoName == "secondServo") {
-      mainMotor.servoSpeed =  servoSpeed;
-      mainMotor.moveToNewLocation(pos);
-    }
+    
+    it = allMotors.find(servoName);
+    it->second.servoSpeed = servoSpeed;
+    it->second.moveToNewLocation(pos);
+
     delay(200);
-    //   Serial.println("Array size");
-    //  Serial.println(sizeof(doc));
-    //    Serial.println("element size");
-    //  Serial.println(sizeof(doc[0]));
   }
-  getMotorDataJson();
-  //  webSocket.emit("servoPos", "\"{\"data\":\"great\"}\"" );
-  int dis = 50;
 
-  //  webSocket.emit("taskCompleted", "\"success\"");
-  //  webSocket.emit("currentServoPos", getMotorDataJson());
-  // DynamicJsonDocument jsonData = getMotorDataJson();
-  // Serial.println("Current motor data");
-  // Serial.println(jsonData);
+  String positions;
+  for (it = allMotors.begin(); it != allMotors.end(); ++it){
+    Serial.println(it->second.servoName);
+    positions += it->second.servoName + "," + String(it->second.servoSpeed) + "," + String(it->second.servoPosition) + "."; 
+  }
+  webSocket.emit("servoPos", ("{\"data\":\"" + positions + "\"}").c_str() );
 }
 
-String getMotorDataJson () {
-  const size_t capacity = JSON_ARRAY_SIZE(3) + 3 * JSON_OBJECT_SIZE(3);
-  DynamicJsonDocument doc(capacity);
-
-  JsonObject doc_0 = doc.createNestedObject();
-  doc_0["name"] = "firstServo";
-  doc_0["pos"] = baseMotor.servoPosition;
-  doc_0["speed"] = baseMotor.servoSpeed;
-
-  JsonObject doc_1 = doc.createNestedObject();
-  doc_1["name"] = "secondServo";
-  doc_1["pos"] = mainMotor.servoPosition;
-  doc_1["speed"] = mainMotor.servoSpeed;
-
-  JsonObject doc_2 = doc.createNestedObject();
-  doc_2["name"] = "thirdServo";
-  doc_2["pos"] = gripperMotor.servoPosition;
-  doc_2["speed"] = gripperMotor.servoSpeed;
-  String data;
-  serializeJson(doc, data);
-  Serial.println("Current motor data");
-  //   data = "\""+data+"\"";
-  data = "{\"foo\":\"bar\"}";
-  Serial.println(data);
-  //  webSocket.emit("servoPos", ("\"" + data + "\"").c_str());
-  //  webSocket.emit("servoPos", "{\"foo\":\"bar\"}");
-
-  return data;
-
-}
-
-void getStartingData() {
+// gets initial servo motor data and initializes required number of ServoMotors
+void getMotorInfo() {
   if (WiFi.status() == WL_CONNECTED) {
     HTTPClient http;
-    http.begin(endPoint);
+    http.begin(servoInfo);
     int httpCode = http.GET();
     if (httpCode > 0) {
       String payload = http.getString();
       http.end();
-      StaticJsonDocument<1000> doc;
-      DeserializationError err = deserializeJson(doc, payload);
-      if (err) {
-        Serial.println("parsing failed");
-        Serial.println(err.c_str());
-        delay(5000);
-        return;
+      
+      StaticJsonDocument<1000> doc = parseMessage(payload);
+      int qty = doc["servoQty"];
+
+      for (int i = 0; i < qty; i++) {
+        String servoName = doc["servos"][i]["name"];
+        int pos = doc["servos"][i]["pos"];
+        int servoSpeed = doc["servos"][i]["speed"];
+
+        allMotors.insert(std::pair<String, ServoMotor>(servoName, ServoMotor(servoName, motor_pin_out[i], servoSpeed, pos)));
+        Serial.println(servoName + " " + pos + " " + servoSpeed);
+
       }
-      const String stateLED = doc["ledIsOn"];
-      const int newPosBase = doc["firstServo"];
-      const int newPosMain = doc["secondServo"];
-      Serial.print(stateLED);
-      Serial.print(newPosBase);
-      Serial.print(newPosMain);
-      baseMotor.servoSpeed = doc["firstServoSpeed"];
-      mainMotor.servoSpeed = doc["secondServoSpeed"];
-      baseMotor.servoPosition = newPosBase;
-      mainMotor.servoPosition = newPosMain;
-      updateLED(ledPin, stateLED);
 
-      baseMotor.initialize();
-      mainMotor.initialize();
-      //      if (newPosBase != baseMotor.servoPosition) {
-      //        baseMotor.moveToNewLocation(newPosBase);
-      //      }
-      //      if (newPosMain != mainMotor.servoPosition) {
-      //        mainMotor.moveToNewLocation(newPosMain);
-      //      }
+      Serial.println("WHAT THE HELL?");
+     Serial.println(allMotors.size());
     }
+    http.end();
   }
 }
 
-void updateLED(int ledPin, String state) {
-  Serial.println("time on: ");
-  Serial.print(millis());
-  if (state == "on") {
-    digitalWrite(ledPin, HIGH);
-  } else {
-    digitalWrite(ledPin, LOW);
-  }
-}
-
+// joins specific websocket rooms
 void joinRoom (const char* message, size_t length) {
-  webSocket.emit("room", "\"5f574e9df11b1a4a3cc911c2\"");
+  webSocket.emit("room", ("\"" + board_id + "\"").c_str());
 }
 
+// updates LED | TODO: make it universal
 void ledControl(const char* message, size_t length) {
-  Serial.println(message);
-  StaticJsonDocument<1000> doc;
-  DeserializationError err = deserializeJson(doc, message);
-  if (err) {
-    Serial.println("parsing failed");
-    Serial.println(err.c_str());
-    delay(5000);
-    return;
-  }
-  const String stateLED = doc["ledIsOn"];
+  StaticJsonDocument<1000> doc = parseMessage(message);
+  
+  String stateLED = doc["ledIsOn"];
   updateLED(stateLED);
   webSocket.emit("taskCompleted", "\"success\"");
 }
 
-void moveServo(const char* message, size_t length) {
-  Serial.println(message);
-  StaticJsonDocument<1000> doc;
-  DeserializationError err = deserializeJson(doc, message);
-  if (err) {
-    Serial.println("parsing failed");
-    Serial.println(err.c_str());
-    delay(5000);
-    return;
-  }
-
-  String servoName = doc["servoName"];
-  String servoProperty = doc["property"];
-
-  int value = doc["value"];
-
-  //  switch (servoName) {
-  //    case "firstServo":
-  //      if (servoProperty == "pos") {
-  //        if (value != baseMotor.servoPosition) {
-  //          baseMotor.moveToNewLocation(value);
-  //        }
-  //      } else if (servoProperty == "speed") {
-  //        baseMotor.servoSpeed = value;
-  //      }
-  //      break;
-  //    case "secondServo":
-  //      if (servoProperty == "pos") {
-  //        if (value != mainMotor.servoPosition) {
-  //          mainMotor.moveToNewLocation(value);
-  //        }
-  //      } else if (servoProperty == "speed") {
-  //        mainMotor.servoSpeed = value;
-  //      }
-  //      break;
-  //    case "thirdServo":
-  //      if (servoProperty == "pos") {
-  //        if (value != gripperMotor.servoPosition) {
-  //          gripperMotor.moveToNewLocation(value);
-  //        }
-  //      } else if (servoProperty == "speed") {
-  //        gripperMotor.servoSpeed = value;
-  //      }
-  //      break;
-  //    default: break;
-  //  }
-
-  if (servoName == "firstServo") {
-    if (servoProperty == "pos") {
-      if (value != baseMotor.servoPosition) {
-        baseMotor.moveToNewLocation(value);
-      }
-    } else if (servoProperty == "speed") {
-      baseMotor.servoSpeed = value;
-    }
-  } else if (servoName == "secondServo") {
-    if (servoProperty == "pos") {
-      if (value != mainMotor.servoPosition) {
-        mainMotor.moveToNewLocation(value);
-      }
-    } else if (servoProperty == "speed") {
-      mainMotor.servoSpeed = value;
-    }
-  } else if (servoName == "thirdServo") {
-    if (servoProperty == "pos") {
-      if (value != gripperMotor.servoPosition) {
-        gripperMotor.moveToNewLocation(value);
-      }
-    } else if (servoProperty == "speed") {
-      gripperMotor.servoSpeed = value;
-    }
-  }
-
-  webSocket.emit("taskCompleted", "\"success\"");
-
-}
-
 void updateLED(String state) {
-  Serial.println("time on: ");
-  currentTime = millis();
-  Serial.print(currentTime);
-  while (millis() < currentTime + 1000) {}
   if (state == "on") {
     digitalWrite(ledPin, HIGH);
   } else {
@@ -329,9 +185,35 @@ void updateLED(String state) {
   }
 }
 
+// move servo with feedback
+void moveServo(const char* message, size_t length) {
+  StaticJsonDocument<1000> doc = parseMessage(message);
 
+  String servoName = doc["name"];
+  int speed = doc["speed"];
+  int pos = doc["pos"];
 
+  it = allMotors.find(servoName);
+  it->second.servoSpeed = speed;
+  it->second.moveToNewLocation(pos);
 
+  webSocket.emit("taskCompleted", "\"success\"");
+}
+
+// servo movement without feedback to server
+void moveServoLive(const char* message, size_t length) {
+  StaticJsonDocument<1000> doc = parseMessage(message);
+
+  String servoName = doc["name"];
+  int speed = doc["speed"];
+  int pos = doc["pos"];
+  
+  it = allMotors.find(servoName);
+  it->second.servoSpeed = speed;
+  it->second.moveToNewLocation(pos);
+}
+
+// Connecting to WIFI
 void searchWiFi() {
   int numberOfNetwork = WiFi.scanNetworks();
   Serial.println("----");
@@ -344,7 +226,6 @@ void searchWiFi() {
     Serial.println("--------------");
   }
 }
-
 
 void connectWiFi() {
   WiFi.begin(ssid, pass);
