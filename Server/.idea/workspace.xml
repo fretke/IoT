@@ -20,7 +20,18 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="345f34fc-78b3-44f0-ab41-7da1d68741ac" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/server.js" beforeDir="false" afterPath="$PROJECT_DIR$/server.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../MediaServer" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../cppPractice/.vscode/launch.exe" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../cppPractice/.vscode/launch.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../cppPractice/.vscode/tasks.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../cppPractice/main.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../cppPractice/main.exe" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../cppPractice/test.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../cppPractice/test.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Controller/boardController.js" beforeDir="false" afterPath="$PROJECT_DIR$/Controller/boardController.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Routes/boardRoutes.js" beforeDir="false" afterPath="$PROJECT_DIR$/Routes/boardRoutes.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Utils/wsManager.js" beforeDir="false" afterPath="$PROJECT_DIR$/Utils/wsManager.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -39,8 +50,9 @@
   <component name="PropertiesComponent">
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/../../IoT-TS/iot-ts" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="nodejs_package_manager_path" value="npm" />
+    <property name="ts.external.directory.path" value="C:\Program Files\JetBrains\WebStorm 2020.2.2\plugins\JavaScriptLanguage\jsLanguageServicesImpl\external" />
     <property name="vue.rearranger.settings.migration" value="true" />
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
@@ -56,7 +68,29 @@
       <workItem from="1601878389534" duration="122000" />
       <workItem from="1602264761053" duration="665000" />
       <workItem from="1602875039914" duration="623000" />
-      <workItem from="1602921164002" duration="3405000" />
+      <workItem from="1602921164002" duration="4241000" />
+      <workItem from="1603008666199" duration="2698000" />
+      <workItem from="1603048827997" duration="612000" />
+      <workItem from="1603305176664" duration="83000" />
+      <workItem from="1603739660284" duration="1294000" />
+      <workItem from="1603826707693" duration="724000" />
+      <workItem from="1603912616979" duration="12000" />
+      <workItem from="1604684913549" duration="2303000" />
+      <workItem from="1604760703091" duration="2250000" />
+      <workItem from="1604863692739" duration="654000" />
+      <workItem from="1605280756312" duration="35000" />
+      <workItem from="1605895878018" duration="2128000" />
+      <workItem from="1605954684630" duration="2951000" />
+      <workItem from="1606032563591" duration="2145000" />
+      <workItem from="1606059195480" duration="6701000" />
+      <workItem from="1606551046462" duration="3237000" />
+      <workItem from="1606642902895" duration="1304000" />
+      <workItem from="1607021775226" duration="11000" />
+      <workItem from="1607176406262" duration="5458000" />
+      <workItem from="1607243519587" duration="2627000" />
+      <workItem from="1607871664889" duration="1026000" />
+      <workItem from="1608371660114" duration="7617000" />
+      <workItem from="1608457690626" duration="6338000" />
     </task>
     <servers />
   </component>
@@ -76,10 +110,13 @@
     <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="WindowStateProjectService">
-    <state x="-1088" y="320" key="FileChooserDialogImpl" timestamp="1602921186418">
-      <screen x="-1920" y="0" width="1920" height="1040" />
+    <state x="-1451" y="211" key="FileChooserDialogImpl" timestamp="1608371690974">
+      <screen x="-2560" y="-220" width="2560" height="1400" />
     </state>
-    <state x="-1088" y="320" key="FileChooserDialogImpl/0.0.1920.1040/-1920.0.1920.1040@-1920.0.1920.1040" timestamp="1602921186418" />
+    <state x="-1088" y="320" key="FileChooserDialogImpl/0.0.1920.1040/-1920.0.1920.1040@-1920.0.1920.1040" timestamp="1603305258105" />
     <state x="832" y="320" key="FileChooserDialogImpl/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1601878399625" />
+    <state x="-1673" y="122" key="FileChooserDialogImpl/0.0.1920.1040/-2560.-220.2048.1112@-2560.-220.2048.1112" timestamp="1604863728056" />
+    <state x="-1451" y="211" key="FileChooserDialogImpl/0.0.1920.1040/-2560.-220.2560.1400@-2560.-220.2560.1400" timestamp="1608371690974" />
+    <state x="832" y="320" key="FileChooserDialogImpl/0.0.1920.1040@0.0.1920.1040" timestamp="1605280779986" />
   </component>
 </project>

@@ -59,8 +59,7 @@ class WsManager {
         });
 
         socket.on(inEvents.updateDevice, (data) => {
-            const ledStatus = data ? "on" : "off";
-            socket.to(socket.room).emit(outEvents.onDeviceToggle, { ledIsOn: ledStatus });
+            socket.to(socket.room).emit(outEvents.onDeviceToggle, { name: data.name, status: data.status });
             this._socket.to(socket.room).emit(outEvents.onUpdateStarted);
         });
 
@@ -85,8 +84,6 @@ class WsManager {
         });
 
         socket.on(inEvents.servoPos, (res) => {
-            console.log(res.data, "data received from controller");
-            const allMotors = ["firstServo", "secondServo", "thirdServo"];
             const formated = res.data.split(".").map((data, index) => {
                 const arr = data.split(",");
                 return {
