@@ -93,14 +93,19 @@ exports.logInCookie = async (req, res, next) => {
   }
 };
 
-exports.updateBulb = async (req, res, next) => {
+exports.updateDevice = async (req, res, next) => {
   try {
-    const { user, status } = req.body;
+    const { userEmail, status, name } = req.body;
+
+    // const result = await User.updateOne(
+    //   { email: user },
+    //   { $set: { "IoT.ledIsOn": status } }
+    // );
 
     const result = await User.updateOne(
-      { email: user },
-      { $set: { "IoT.ledIsOn": status } }
-    );
+        {email: userEmail, "IoT.switches.name": name},
+        { $set: {"IoT.switches.$.state": status}}
+    )
 
     if (result.n === 1) {
       res.send(JSON.stringify({ updated: true }));
@@ -111,6 +116,64 @@ exports.updateBulb = async (req, res, next) => {
     console.log(err, "error updating bulb state");
   }
 };
+
+exports.addDevice = async (req, res) => {
+  const {email, device} = req.body;
+
+  const result = await User.updateOne(
+      {email},
+      {$push: {"IoT.switches": device}}
+  )
+  if (result.n === 1) {
+    res.send(JSON.stringify({ updated: true }));
+  } else {
+    res.send(JSON.stringify({ updated: false }));
+  }
+}
+
+exports.deleteDevice = async (req, res) => {
+  const {email, name} = req.body;
+  console.log(req.body, "deleting...");
+  const result = await User.updateOne(
+      {email},
+      {$pull: {"IoT.switches": {name: name}}}
+  )
+
+  if (result.n === 1) {
+    res.send(JSON.stringify({ updated: true }));
+  } else {
+    res.send(JSON.stringify({ updated: false }));
+  }
+}
+
+exports.addServo = async (req, res) => {
+  const {email, servo} = req.body;
+  // console.log(servo, "servo");
+  // res.send("good");
+  const result = await User.updateOne(
+      {email},
+      {$push: {"IoT.servos": servo}}
+  )
+  if (result.n === 1) {
+    res.send(JSON.stringify({ updated: true }));
+  } else {
+    res.send(JSON.stringify({ updated: false }));
+  }
+}
+
+exports.deleteServo = async (req, res) => {
+  const {email, name} = req.body;
+
+  const result = await User.updateOne(
+      {email},
+      {$pull: {"IoT.servos": {name: name}}}
+  )
+  if (result.n === 1) {
+    res.send(JSON.stringify({ updated: true }));
+  } else {
+    res.send(JSON.stringify({ updated: false }));
+  }
+}
 
 exports.updateServo = async (req, res, next) => {
   console.log(req.body, "updating servo");

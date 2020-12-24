@@ -8,7 +8,15 @@ router.post("/logIn", mainController.logIn);
 
 router.post("/logInCookie", mainController.logInCookie);
 
-router.post("/updateBulb", mainController.updateBulb);
+router.post("/updateDevice", mainController.updateDevice);
+
+router.post("/addDevice", mainController.addDevice);
+
+router.post("/deleteDevice", mainController.deleteDevice);
+
+router.post("/addServo", mainController.addServo);
+
+router.post("/deleteServo", mainController.deleteServo);
 
 router.post("/updateServo", mainController.updateServo);
 

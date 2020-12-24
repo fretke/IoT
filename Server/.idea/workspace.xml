@@ -20,18 +20,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="345f34fc-78b3-44f0-ab41-7da1d68741ac" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/../MediaServer" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../cppPractice/.vscode/launch.exe" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../cppPractice/.vscode/launch.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../cppPractice/.vscode/tasks.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../cppPractice/main.cpp" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../cppPractice/main.exe" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../cppPractice/test.cpp" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../cppPractice/test.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Controller/boardController.js" beforeDir="false" afterPath="$PROJECT_DIR$/Controller/boardController.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Routes/boardRoutes.js" beforeDir="false" afterPath="$PROJECT_DIR$/Routes/boardRoutes.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Utils/wsManager.js" beforeDir="false" afterPath="$PROJECT_DIR$/Utils/wsManager.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Controller/mainController.js" beforeDir="false" afterPath="$PROJECT_DIR$/Controller/mainController.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Routes/mainRoutes.js" beforeDir="false" afterPath="$PROJECT_DIR$/Routes/mainRoutes.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -90,7 +81,9 @@
       <workItem from="1607243519587" duration="2627000" />
       <workItem from="1607871664889" duration="1026000" />
       <workItem from="1608371660114" duration="7617000" />
-      <workItem from="1608457690626" duration="6338000" />
+      <workItem from="1608457690626" duration="9276000" />
+      <workItem from="1608811585330" duration="4111000" />
+      <workItem from="1608832922801" duration="3358000" />
     </task>
     <servers />
   </component>
@@ -110,13 +103,13 @@
     <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="WindowStateProjectService">
-    <state x="-1451" y="211" key="FileChooserDialogImpl" timestamp="1608371690974">
+    <state x="-1451" y="211" key="FileChooserDialogImpl" timestamp="1608811606830">
       <screen x="-2560" y="-220" width="2560" height="1400" />
     </state>
     <state x="-1088" y="320" key="FileChooserDialogImpl/0.0.1920.1040/-1920.0.1920.1040@-1920.0.1920.1040" timestamp="1603305258105" />
     <state x="832" y="320" key="FileChooserDialogImpl/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1601878399625" />
     <state x="-1673" y="122" key="FileChooserDialogImpl/0.0.1920.1040/-2560.-220.2048.1112@-2560.-220.2048.1112" timestamp="1604863728056" />
-    <state x="-1451" y="211" key="FileChooserDialogImpl/0.0.1920.1040/-2560.-220.2560.1400@-2560.-220.2560.1400" timestamp="1608371690974" />
+    <state x="-1451" y="211" key="FileChooserDialogImpl/0.0.1920.1040/-2560.-220.2560.1400@-2560.-220.2560.1400" timestamp="1608811606830" />
     <state x="832" y="320" key="FileChooserDialogImpl/0.0.1920.1040@0.0.1920.1040" timestamp="1605280779986" />
   </component>
 </project>
