@@ -21,10 +21,14 @@ const socket = require("socket.io");
 const inEvents = {
     updateDevice: "updateDevice",
     updateServo: "updateServo",
+    addServo: "addServo",
+    deleteServo: "deleteServo",
     liveControl: "liveControl",
     executeSequence: "executeSequence",
     taskCompleted: "taskCompleted",
-    servoPos: "servoPos"
+    servoPos: "servoPos",
+    addDevice: "addDevice",
+    deleteDevice: "deleteDevice"
 }
 
 const outEvents = {
@@ -33,8 +37,11 @@ const outEvents = {
     onUpdateStarted: "onUpdateStarted",
     onUpdateFinished: "onUpdateFinished",
     onSequenceOver: "onSequenceOver",
-    playSequence: "playSequence"
-
+    playSequence: "playSequence",
+    onServoAdd: "onServoAdd",
+    onServoDelete: "onServoDelete",
+    onDeviceAdd: "onDeviceAdd",
+    onDeviceDelete: "onDeviceDelete"
 }
 
 class WsManager {
@@ -95,6 +102,19 @@ class WsManager {
             socket
                 .to(socket.room)
                 .emit(outEvents.onSequenceOver, formated);
+        });
+
+        socket.on(inEvents.addServo, (data) => {
+            socket.to(socket.room).emit(outEvents.onServoAdd, data);
+        });
+        socket.on(inEvents.deleteServo, (data) => {
+            socket.to(socket.room).emit(outEvents.onServoDelete, data);
+        });
+        socket.on(inEvents.addDevice, (data) => {
+            socket.to(socket.room).emit(outEvents.onDeviceAdd, data);
+        });
+        socket.on(inEvents.deleteDevice, (data) => {
+            socket.to(socket.room).emit(outEvents.onDeviceDelete, data);
         });
     }
 }
